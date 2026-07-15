@@ -1,0 +1,143 @@
+---
+sidebar_position: 3
+slug: /create-or-queue-task-api
+title: Create or continue tasks from automation
+---
+
+# Create or Continue Tasks from Automation
+
+## Overview
+
+Use the create-or-queue task API when an external system should send work to Verft.
+
+The endpoint can:
+
+- create a new task when no task exists for the external target
+- queue a follow-up message on an existing task for the same external target
+- avoid duplicate queued messages when the same automation event is sent more than once
+
+This is useful for CI jobs, GitHub Actions, custom bots, and other automation that should act as a Verft user.
+
+## Before You Begin
+
+You need:
+
+- a running Verft instance
+- the Verft repository ID for the repository the task should use
+- a Verft personal access token
+- access to the repository in Verft
+- the required token scopes
+
+The personal access token must include:
+
+- `repo:read` or `repo:list`
+- `task:edit`
+- `task:create` when the API should create a task if one does not already exist
+- `task:build` for build tasks, or `task:ask` for ask tasks
+
+Send the token as a bearer token:
+
+```text
+Authorization: Bearer <verft_pat>
+```
+
+## Steps
+
+1. Create a Verft personal access token from your Verft profile.
+
+2. Store the token securely in the automation system.
+
+3. Send a `POST` request to `/api/tasks/create-or-queue`.
+
+   Replace `asw_pat_...` with your personal access token and `repo_123` with the Verft repository ID:
+
+   ```bash
+   curl -fsS -X POST "http://localhost:3217/api/tasks/create-or-queue" \
+     -H "Authorization: Bearer asw_pat_..." \
+     -H "Content-Type: application/json" \
+     -d '{
+       "repoId": "repo_123",
+       "target": {
+         "type": "github_pr",
+         "id": "123"
+       },
+       "task": {
+         "title": "Fix PR #123 CI",
+         "message": "CI failed. Fix the failure.\n\nLogs: https://github.com/acme/repo/actions/runs/123456",
+         "action": "build",
+         "baseBranch": "feature-branch",
+         "workOnBranch": true,
+         "createIfMissing": true
+       },
+       "dedupeKey": "github-actions:acme/repo:123456:1:test"
+     }'
+   ```
+
+   For a hosted Verft instance, replace `http://localhost:3217` with the public Verft URL.
+
+4. Use a stable `target` for the external item the automation represents.
+
+   Calls with the same `repoId`, `target.type`, and `target.id` continue the same task.
+
+5. Add a `dedupeKey` when the same event may be delivered more than once.
+
+   Reusing the same `dedupeKey` returns the existing message instead of queueing a duplicate.
+
+## Result
+
+Verft returns `202 Accepted` when the request is accepted.
+
+If no task exists for the target and `task.createIfMissing` is not `false`, Verft creates a task and queues the message.
+
+If a task already exists for the target, Verft queues the message on that task.
+
+If the `dedupeKey` was already used on the task, Verft returns the existing message and does not queue a duplicate.
+
+Example response for a created or continued task:
+
+```json
+{
+  "taskId": "task_123",
+  "messageId": "msg_123",
+  "createdTask": true,
+  "queuedMessage": true,
+  "deduped": false
+}
+```
+
+Example response for a duplicate event:
+
+```json
+{
+  "taskId": "task_123",
+  "messageId": "msg_123",
+  "createdTask": false,
+  "queuedMessage": false,
+  "deduped": true
+}
+```
+
+## Troubleshooting
+
+- Problem: The request returns `400`.
+  - Solution: Check the request body. `repoId`, `target.type`, `target.id`, and `task.message` are required. `target.type` must use lowercase letters, numbers, underscores, or hyphens.
+
+- Problem: The request returns `401`.
+  - Solution: Check that the `Authorization` header uses `Bearer <verft_pat>` and that the token is valid.
+
+- Problem: The request returns `403`.
+  - Solution: Check that the personal access token has the required scopes. Use `task:create` when the API may create a missing task, and use `task:build` or `task:ask` for the requested action.
+
+- Problem: The request returns `404`.
+  - Solution: Confirm the repository ID is correct and that the token user can access the repository. If `task.createIfMissing` is `false`, make sure a task already exists for the same target.
+
+- Problem: The request returns `409`.
+  - Solution: The task cannot be changed right now. For example, a task with an active terminal session may block queued changes. Try again after the blocking activity ends.
+
+- Problem: The same automation event queues multiple messages.
+  - Solution: Send a stable `dedupeKey` for each external event. Use the same value when retrying the same event.
+
+## Related Articles
+
+- [Getting started](/)
+- [Verft GitHub repository](https://github.com/verfthq/verft)
