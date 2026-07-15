@@ -23,7 +23,7 @@ This is useful for CI jobs, GitHub Actions, custom bots, and other automation th
 You need:
 
 - a running Verft instance
-- the Verft repository ID for the repository the task should use
+- the [Verft repository ID](/find-repository-id) for the repository the task should use
 - a Verft personal access token
 - access to the repository in Verft
 - the required token scopes
@@ -47,7 +47,9 @@ Authorization: Bearer <verft_pat>
 
 2. Store the token securely in the automation system.
 
-3. Send a `POST` request to `/api/tasks/create-or-queue`.
+3. Find the [repository ID](/find-repository-id) for the repository the task should use.
+
+4. Send a `POST` request to `/api/tasks/create-or-queue`.
 
    Replace `asw_pat_...` with your personal access token and `repo_123` with the Verft repository ID:
 
@@ -75,11 +77,11 @@ Authorization: Bearer <verft_pat>
 
    For a hosted Verft instance, replace `http://localhost:3217` with the public Verft URL.
 
-4. Use a stable `target` for the external item the automation represents.
+5. Use a stable `target` for the external item the automation represents.
 
    Calls with the same `repoId`, `target.type`, and `target.id` continue the same task.
 
-5. Add a `dedupeKey` when the same event may be delivered more than once.
+6. Add a `dedupeKey` when the same event may be delivered more than once.
 
    Reusing the same `dedupeKey` returns the existing message instead of queueing a duplicate.
 
@@ -139,5 +141,6 @@ Example response for a duplicate event:
 
 ## Related Articles
 
+- [Find a repository ID](/find-repository-id)
 - [Getting started](/)
 - [Verft GitHub repository](https://github.com/verfthq/verft)

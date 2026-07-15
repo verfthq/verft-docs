@@ -15,7 +15,7 @@ The workflow runs only for merged pull requests. It sends the merged PR details 
 You need:
 
 - a Verft personal access token
-- the Verft repository ID for the repository Verft should work in
+- the [Verft repository ID](/find-repository-id) for the repository Verft should work in
 - a GitHub repository where you can add Actions secrets, variables, and workflow files
 - a Verft user account that can access the repository
 
@@ -35,7 +35,7 @@ The Verft personal access token must include:
 2. Add these GitHub Actions repository variables:
 
    - `VERFT_URL`: the URL of your Verft instance, such as `https://verft.example.com`
-   - `VERFT_REPO_ID`: the Verft repository ID, such as `repo_123`
+   - `VERFT_REPO_ID`: the [Verft repository ID](/find-repository-id), such as `repo_123`
 
 3. Create this workflow file in your repository:
 
@@ -145,6 +145,7 @@ Verft creates a task for that pull request, or continues the existing task for t
 
 ## Related Articles
 
+- [Find a repository ID](/find-repository-id)
 - [Create or continue tasks from automation](/create-or-queue-task-api)
 - [GitHub Actions events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#running-your-pull_request-workflow-when-a-pull-request-merges)
 - [Use secrets in GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)

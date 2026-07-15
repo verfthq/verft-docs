@@ -1,0 +1,53 @@
+---
+sidebar_position: 3
+slug: /find-repository-id
+title: Find a repository ID
+---
+
+# Find a Repository ID
+
+Use the repository ID when an API call, webhook, or automation needs to tell Verft which repository to use.
+
+Repository IDs are shown on existing repositories. Create the repository in Verft before looking for its ID.
+
+## Before You Begin
+
+You need:
+
+- a Verft user account that can open **Repositories**
+- an existing repository in Verft
+- permission to open the repository edit page
+
+## Steps
+
+1. Open Verft.
+
+2. Open **Repositories**.
+
+3. Find the repository you want to use.
+
+4. Select **Edit**.
+
+5. Find the **Repository ID** section.
+
+6. Copy the repository ID.
+
+## Result
+
+You can use the copied repository ID in Verft API requests, GitHub Actions variables, and other automation that creates or updates tasks for that repository.
+
+## Troubleshooting
+
+- Problem: You do not see **Repositories**.
+  - Solution: Ask an administrator for access to view repositories.
+
+- Problem: You do not see **Edit** for the repository.
+  - Solution: Ask an administrator for permission to edit repositories, or ask someone with access to copy the repository ID for you.
+
+- Problem: The repository is not listed.
+  - Solution: Add the repository to Verft first, or ask an administrator to confirm that your account can access it.
+
+## Related Articles
+
+- [Create or continue tasks from automation](/create-or-queue-task-api)
+- [Create documentation after a pull request is merged](/create-documentation-after-pr-merge)

@@ -8,6 +8,7 @@ const sidebars: SidebarsConfig = {
       label: 'How-to Guides',
       collapsed: false,
       items: [
+        'how-to/find-repository-id',
         'how-to/create-or-queue-task-api',
         'how-to/create-documentation-after-pr-merge',
       ],
