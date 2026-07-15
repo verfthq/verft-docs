@@ -64,7 +64,10 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Verft Docs',
+      logo: {
+        alt: 'Verft logo',
+        src: 'img/logo.svg',
+      },
       items: [
         {
           type: 'docSidebar',

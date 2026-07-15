@@ -1,0 +1,150 @@
+---
+sidebar_position: 4
+slug: /create-documentation-after-pr-merge
+title: Create documentation after a pull request is merged
+---
+
+# Create Documentation After a Pull Request Is Merged
+
+Use a GitHub Actions workflow to ask Verft to create or update documentation after a pull request is merged.
+
+The workflow runs only for merged pull requests. It sends the merged PR details to Verft with the create-or-queue task API.
+
+## Before You Begin
+
+You need:
+
+- a Verft personal access token
+- the Verft repository ID for the repository Verft should work in
+- a GitHub repository where you can add Actions secrets, variables, and workflow files
+- a Verft user account that can access the repository
+
+The Verft personal access token must include:
+
+- `repo:read` or `repo:list`
+- `task:edit`
+- `task:create`
+- `task:build`
+
+## Steps
+
+1. In GitHub, add a repository secret named `VERFT_PAT`.
+
+   Use your Verft personal access token as the secret value.
+
+2. Add these GitHub Actions repository variables:
+
+   - `VERFT_URL`: the URL of your Verft instance, such as `https://verft.example.com`
+   - `VERFT_REPO_ID`: the Verft repository ID, such as `repo_123`
+
+3. Create this workflow file in your repository:
+
+   ```yaml title=".github/workflows/verft-docs-after-merge.yml"
+   name: Ask Verft to update docs after PR merge
+
+   on:
+     pull_request:
+       types:
+         - closed
+
+   jobs:
+     create-docs-task:
+       if: github.event.pull_request.merged == true
+       runs-on: ubuntu-latest
+       env:
+         VERFT_URL: ${{ vars.VERFT_URL }}
+         VERFT_REPO_ID: ${{ vars.VERFT_REPO_ID }}
+         VERFT_PAT: ${{ secrets.VERFT_PAT }}
+         PR_NUMBER: ${{ github.event.pull_request.number }}
+         PR_TITLE: ${{ github.event.pull_request.title }}
+         PR_URL: ${{ github.event.pull_request.html_url }}
+         BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+         MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+         REPOSITORY: ${{ github.repository }}
+
+       steps:
+         - name: Build Verft task payload
+           run: |
+             node <<'NODE' > payload.json
+             const {
+               BASE_BRANCH,
+               MERGE_SHA,
+               PR_NUMBER,
+               PR_TITLE,
+               PR_URL,
+               REPOSITORY,
+               VERFT_REPO_ID,
+             } = process.env;
+
+             const payload = {
+               repoId: VERFT_REPO_ID,
+               target: {
+                 type: "github_pr",
+                 id: PR_NUMBER,
+               },
+               task: {
+                 title: `Update documentation for ${REPOSITORY} PR #${PR_NUMBER}`,
+                 message: [
+                   `A pull request was merged and may need documentation updates.`,
+                   ``,
+                   `Repository: ${REPOSITORY}`,
+                   `PR: ${PR_TITLE}`,
+                   `URL: ${PR_URL}`,
+                   `Merge commit: ${MERGE_SHA || "Not available"}`,
+                   ``,
+                   `Review the merged change and create or update the user documentation that is needed.`,
+                 ].join("\n"),
+                 action: "build",
+                 baseBranch: BASE_BRANCH,
+                 workOnBranch: true,
+                 createIfMissing: true,
+               },
+               dedupeKey: `github-actions:${REPOSITORY}:pr:${PR_NUMBER}:docs-after-merge:${MERGE_SHA || "merged"}`,
+             };
+
+             process.stdout.write(JSON.stringify(payload));
+             NODE
+
+         - name: Send task to Verft
+           run: |
+             curl -fsS -X POST "${VERFT_URL%/}/api/tasks/create-or-queue" \
+               -H "Authorization: Bearer ${VERFT_PAT}" \
+               -H "Content-Type: application/json" \
+               --data @payload.json
+   ```
+
+4. Commit the workflow file to the repository's default branch.
+
+5. Merge a pull request.
+
+## Result
+
+When a pull request is merged, GitHub Actions sends a request to Verft.
+
+Verft creates a task for that pull request, or continues the existing task for the same pull request. If the workflow is retried for the same merge commit, the `dedupeKey` prevents duplicate queued messages.
+
+## Troubleshooting
+
+- Problem: The workflow runs when a pull request is closed without merging.
+  - Solution: Check that the job has this condition: `if: github.event.pull_request.merged == true`.
+
+- Problem: The workflow cannot reach Verft.
+  - Solution: Check that `VERFT_URL` is set to the public URL of your Verft instance and does not include `/api/tasks/create-or-queue`.
+
+- Problem: Verft returns `401`.
+  - Solution: Check that the `VERFT_PAT` secret contains a valid Verft personal access token.
+
+- Problem: Verft returns `403`.
+  - Solution: Check that the token includes `task:create`, `task:edit`, `task:build`, and repository read access.
+
+- Problem: Verft returns `404`.
+  - Solution: Check that `VERFT_REPO_ID` is the Verft repository ID and that the token user can access that repository.
+
+- Problem: Pull requests from forks do not create Verft tasks.
+  - Solution: Check whether the workflow has access to the `VERFT_PAT` secret for that event. GitHub may restrict secrets for workflows triggered from forked repositories.
+
+## Related Articles
+
+- [Create or continue tasks from automation](/create-or-queue-task-api)
+- [GitHub Actions events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#running-your-pull_request-workflow-when-a-pull-request-merges)
+- [Use secrets in GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)

@@ -111,6 +111,26 @@ body {
   color: var(--app-body-text);
 }
 
+.navbar__brand,
+.navbar__logo {
+  align-items: center;
+  display: flex;
+}
+
+.navbar__logo {
+  margin-right: 0;
+}
+
+.navbar__logo img {
+  color: #1a1d21;
+  display: block;
+}
+
+html[data-theme='dark'] .navbar__logo img,
+html[data-theme='graphite-dark'] .navbar__logo img {
+  filter: invert(1) brightness(0.9);
+}
+
 .theme-code-block,
 pre,
 code {
