@@ -1,0 +1,73 @@
+---
+sidebar_position: 1
+slug: /host-command-logs
+title: Host Command logs
+---
+
+# Host Command Logs
+
+When a repository uses **Host Commands**, the host command daemon writes JSON log lines for command checks, rejected requests, and command runs.
+
+Use these logs when you operate a self-hosted Verft instance and need to understand whether a host command was reached, rejected, started, or completed.
+
+## Availability
+
+Host Command logs are available only when the host command daemon is running.
+
+The logs are written to the daemon process output. Where you view them depends on how you run the daemon, such as a terminal, a process manager, or a container log viewer.
+
+## Events
+
+Each JSON log line includes `type: "hostexec"` and an `event` value.
+
+| Event | What it means |
+| --- | --- |
+| `hostexec.capabilities.requested` | Verft checked which host commands the daemon can run. |
+| `hostexec.request.rejected` | The daemon rejected a request before it reached command execution. |
+| `hostexec.exec.rejected` | The daemon rejected a command execution request. |
+| `hostexec.exec.started` | The daemon started a host command. |
+| `hostexec.exec.spawn_failed` | The daemon could not start the requested command. |
+| `hostexec.exec.completed` | The command process ended. |
+
+## Fields
+
+Log lines may include these fields:
+
+| Field | Meaning |
+| --- | --- |
+| `requestId` | A daemon request number. Use it to connect log lines from the same request. |
+| `remoteAddress` | The network address that connected to the daemon. |
+| `method` | The request method, such as `GET` or `POST`. |
+| `path` | The request path. |
+| `reason` | Why the daemon rejected the request. |
+| `command` | The host command name, such as `xcodebuild`. |
+| `argc` | The number of command arguments. The arguments themselves are not logged. |
+| `cwdRelativePath` | The command working directory, relative to the host workspace root. |
+| `taskId` | The Verft task ID associated with the request. |
+| `repoId` | The Verft repository ID associated with the request. |
+| `durationMs` | How long the command ran, in milliseconds. |
+| `exitCode` | The process exit code. `0` means the command completed successfully. |
+| `signal` | The signal that ended the command, if any. |
+| `error` | The error message when the daemon could not start the command. |
+
+## Rejection Reasons
+
+| Reason | What to check |
+| --- | --- |
+| `unauthorized` | The daemon requires a bearer token and the request did not include the expected token. |
+| `not_found` | The request path is not supported by the daemon. |
+| `invalid_request` | The request body was missing, malformed, or too large. |
+| `invalid_command` | The command name was missing or had an unsupported format. |
+| `command_not_allowed` | The command is not in the daemon's allowed command list. |
+| `missing_host_workspace_root` | The request did not include the host workspace root. |
+| `invalid_cwd` | The requested working directory was invalid or escaped the host workspace root. |
+
+## Privacy
+
+Host Command logs include command names, task IDs, repository IDs, working directory paths relative to the workspace root, exit codes, signals, durations, and rejection reasons.
+
+Host Command logs do not include bearer tokens or command arguments.
+
+## Related Articles
+
+- [Inspect Verft logs](/inspect-logs)

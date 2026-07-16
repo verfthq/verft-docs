@@ -13,6 +13,14 @@ const sidebars: SidebarsConfig = {
         'how-to/inspect-logs',
       ],
     },
+    {
+      type: 'category',
+      label: 'Reference',
+      collapsed: false,
+      items: [
+        'reference/host-command-logs',
+      ],
+    },
   ],
 };
 
