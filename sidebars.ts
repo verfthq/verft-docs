@@ -10,6 +10,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'how-to/create-or-queue-task-api',
         'how-to/create-documentation-after-pr-merge',
+        'how-to/inspect-logs',
       ],
     },
   ],

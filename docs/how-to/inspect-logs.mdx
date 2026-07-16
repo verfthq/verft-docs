@@ -1,0 +1,121 @@
+---
+sidebar_position: 5
+slug: /inspect-logs
+title: Inspect Verft logs
+---
+
+# Inspect Verft Logs
+
+Use Dozzle to inspect Verft Docker logs from a browser.
+
+This guide is for people who operate a self-hosted Verft instance and need a quick way to view container logs without signing in to the server for every check.
+
+Dozzle reads Docker logs through the Docker socket. Protect the log viewer with authentication and only expose it to people who should be able to view deployment logs.
+
+## Before You Begin
+
+You need:
+
+- access to the server that runs Verft
+- permission to edit the Docker Compose configuration
+- permission to start Docker Compose services
+- a username and password for the log viewer
+- a network path to the server from your browser
+
+If the log viewer will be reachable over the internet, put it behind HTTPS and limit access to trusted users.
+
+## Steps
+
+1. Generate a Caddy password hash for the log viewer password:
+
+   ```bash
+   docker run --rm caddy:2 caddy hash-password --plaintext 'change-this-password'
+   ```
+
+2. Copy the generated hash.
+
+   The hash usually starts with `$2a$`, `$2b$`, or `$2y$`.
+
+3. Add Dozzle and a Caddy proxy to your Docker Compose file:
+
+   ```yaml title="docker-compose.yml"
+   services:
+     dozzle:
+       image: amir20/dozzle:latest
+       restart: unless-stopped
+       volumes:
+         - /var/run/docker.sock:/var/run/docker.sock:ro
+       expose:
+         - "8080"
+
+     dozzle-proxy:
+       image: caddy:2
+       restart: unless-stopped
+       ports:
+         - "9999:9999"
+       volumes:
+         - ./Caddyfile.dozzle:/etc/caddy/Caddyfile:ro
+       depends_on:
+         - dozzle
+   ```
+
+4. Create a Caddyfile for the log viewer:
+
+   ```caddyfile title="Caddyfile.dozzle"
+   :9999 {
+     basic_auth {
+       admin <password-hash>
+     }
+
+     reverse_proxy dozzle:8080
+   }
+   ```
+
+5. Replace `<password-hash>` with the hash you generated.
+
+6. Start or restart the log viewer services:
+
+   ```bash
+   docker compose up -d dozzle dozzle-proxy
+   ```
+
+7. Open the log viewer in your browser:
+
+   ```text
+   http://<server-hostname>:9999
+   ```
+
+8. Sign in with the username `admin` and the password you used when generating the hash.
+
+9. Select a Verft container to view its logs.
+
+## Result
+
+Dozzle opens in your browser and shows logs for Docker containers running on the Verft server.
+
+Use the container list to switch between Verft services. New log output appears as the container writes it.
+
+## Troubleshooting
+
+- Problem: The browser cannot connect to the log viewer.
+  - Solution: Confirm the services are running:
+
+    ```bash
+    docker compose ps dozzle dozzle-proxy
+    ```
+
+- Problem: The sign-in prompt rejects the password.
+  - Solution: Generate a new hash from the exact password you want to use, update `Caddyfile.dozzle`, and restart `dozzle-proxy`.
+
+- Problem: Dozzle opens but does not show containers.
+  - Solution: Check that the Dozzle service has read-only access to `/var/run/docker.sock`.
+
+- Problem: Port `9999` is already in use.
+  - Solution: Change the published port in `docker-compose.yml`. For example, use `"9998:9999"` and open `http://<server-hostname>:9998`.
+
+- Problem: You need to expose logs on a public domain.
+  - Solution: Route the log viewer through your public reverse proxy with HTTPS enabled instead of exposing plain HTTP directly.
+
+## Related Articles
+
+- [Getting started](/)
