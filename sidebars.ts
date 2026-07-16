@@ -9,6 +9,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'how-to/create-or-queue-task-api',
+        'how-to/change-pr-task-auto-archive',
         'how-to/create-documentation-after-pr-merge',
         'how-to/inspect-logs',
       ],

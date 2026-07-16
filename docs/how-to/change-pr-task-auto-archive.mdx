@@ -1,0 +1,50 @@
+---
+sidebar_position: 4
+slug: /change-pr-task-auto-archive
+title: Change pull request task auto-archive
+---
+
+# Change Pull Request Task Auto-Archive
+
+Use **Archive Task When PR Merges** to choose whether Verft archives the linked task when a GitHub pull request is merged.
+
+This setting is on by default for new repositories. Turn it off when you want linked tasks to stay active after their pull request is merged.
+
+## Before You Begin
+
+You need:
+
+- access to edit the repository in Verft
+- GitHub Integration configured for the repository
+- a GitHub webhook that sends pull request events to Verft
+
+## Steps
+
+1. Open **Repositories**.
+
+2. Select the repository you want to change.
+
+3. Open the repository editor.
+
+4. Open the **Github** tab.
+
+5. Find **Archive Task When PR Merges**.
+
+6. Turn the setting on or off.
+
+7. Save the repository.
+
+## Result
+
+When the setting is on, Verft archives the linked task after GitHub sends a merged pull request webhook for that repository.
+
+When the setting is off, Verft leaves the linked task unchanged after the pull request is merged.
+
+## Troubleshooting
+
+- Problem: A task was not archived after its pull request was merged.
+  - Solution: Confirm **Archive Task When PR Merges** is on for the repository. Then confirm the repository's GitHub webhook sends pull request events to Verft.
+
+## Related Articles
+
+- [Getting started](/)
