@@ -1,0 +1,31 @@
+---
+slug: /task-types
+title: Task types
+---
+
+# Task Types
+
+Verft supports two task types: **Build** and **Ask**.
+
+## Task Type Reference
+
+| Task type | Use it when | User-visible result |
+| --- | --- | --- |
+| **Build** | You want an agent to modify files in a repository workspace. | Reviewable changes, diffs, checkpoints, logs, and Git actions. |
+| **Ask** | You want an agent to inspect a repository and answer a question. | An answer without file-writing behavior. |
+
+## Related Fields
+
+| Field | Applies to | Notes |
+| --- | --- | --- |
+| **Repository** | Build and Ask | The repository the task uses. |
+| **Provider** | Build and Ask | `Codex` or `Claude Code (experimental)`. |
+| **Model** | Build and Ask | The model selected for the provider. |
+| **Effort** | Build and Ask | `Low`, `Medium`, `High`, and for Claude also `Max`. |
+| **Base Branch** | Build and Ask | The branch used as the task base. |
+| **Branch Strategy** | Build | Choose whether to create a feature branch or work on the existing branch. |
+
+## Related Articles
+
+- [Create a task](/create-task)
+- [Review task results](/review-task-results)

@@ -1,0 +1,55 @@
+---
+slug: /add-first-repository
+title: Add your first repository
+---
+
+# Add Your First Repository
+
+Add a repository so Verft can create tasks against that codebase.
+
+This guide is for users who have signed in to Verft and need to make a repository available for task creation.
+
+## Before You Begin
+
+You need:
+
+- access to Verft
+- permission to create repositories
+- a Git repository URL
+- the repository's default branch name
+- GitHub credentials configured in **Settings** when the repository needs authenticated Git access
+
+## Steps
+
+1. Open **Repositories**.
+
+2. Select **Add Repository**.
+
+3. In **General**, enter the repository **Name**, **URL**, and **Default Branch**.
+
+4. Optional: open **AI** and set repository defaults for **Provider**, **Model**, and **Effort**.
+
+   Leave these fields empty to use the system defaults from **Settings**.
+
+5. Optional: add repository-specific **MCP Servers** in **AI**.
+
+6. Optional: configure **Github**, **Slack**, or **Webhooks** if this repository should receive external feedback.
+
+7. Save the repository.
+
+## Result
+
+The repository appears in **Repositories** and becomes available in the **Repository** selector when you create a task.
+
+## Troubleshooting
+
+- Problem: You do not see **Add Repository**.
+  - Solution: Ask an administrator to grant repository creation access.
+
+- Problem: A task cannot access the repository.
+  - Solution: Check the repository **URL**, **Default Branch**, and the GitHub token in **Settings**.
+
+## Related Articles
+
+- [Configure provider credentials](/configure-provider-credentials)
+- [Create your first task](/create-first-task)

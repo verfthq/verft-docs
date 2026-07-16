@@ -1,0 +1,56 @@
+---
+slug: /api-request-examples
+title: API request examples
+---
+
+# API Request Examples
+
+Use these examples to test the create-or-queue task API from automation.
+
+## Before You Begin
+
+You need:
+
+- a Verft personal access token
+- the Verft repository ID
+- a Verft base URL
+- the required token scopes
+
+## Curl Example
+
+```bash
+export VERFT_URL="http://localhost:3217"
+export VERFT_PAT="asw_pat_..."
+export VERFT_REPO_ID="repo_123"
+
+curl -fsS "$VERFT_URL/api/tasks/create-or-queue" \
+  -H "Authorization: Bearer $VERFT_PAT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "repoId": "'"$VERFT_REPO_ID"'",
+    "target": {
+      "type": "github_pr",
+      "id": "123"
+    },
+    "task": {
+      "title": "Fix PR #123 CI",
+      "message": "Smoke test from create-or-queue API.",
+      "action": "build",
+      "baseBranch": "main",
+      "workOnBranch": false,
+      "createIfMissing": true
+    },
+    "dedupeKey": "manual-smoke-test:github_pr:123:1"
+  }'
+```
+
+Run the same request twice with the same `dedupeKey`. The second response should have `"deduped": true`.
+
+## GitHub Actions Example
+
+Use GitHub Actions when you want CI or pull request events to send work to Verft. See [Create documentation after a pull request is merged](/create-documentation-after-pr-merge) for a complete workflow example.
+
+## Related Articles
+
+- [Create or continue tasks from automation](/create-or-queue-task-api)
+- [API responses and errors](/api-responses-and-errors)

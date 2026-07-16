@@ -1,0 +1,49 @@
+---
+slug: /environment-variables
+title: Environment variables
+---
+
+# Environment Variables
+
+Use `.env` to configure the local Verft runtime and server behavior.
+
+Provider API keys and GitHub credentials are configured in **Settings**, not in `.env`.
+
+## Core Variables
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `DEFAULT_ADMIN_NAME` | `Administrator` | Bootstrap admin display name. |
+| `DEFAULT_ADMIN_EMAIL` | `admin@verft.local` | Bootstrap admin email. |
+| `DEFAULT_ADMIN_PASSWORD` | `admin123!` | Bootstrap admin password. |
+| `AUTH_COOKIE_NAME` | `verft_session` | Session cookie name. |
+| `AUTH_SESSION_TTL_DAYS` | `7` | Session lifetime in days. |
+| `PUBLIC_PORT` | `3217` | Public port exposed by nginx. |
+| `CORS_ORIGIN` | `http://localhost:3217` | Browser origin allowed by the API. |
+
+## Runtime Variables
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `AGENT_RUNTIME_IMAGE` | `verft-agent-toolbox:latest` | Agent toolbox image used by automated runs and runtime containers. |
+| `DOCKER_SOCKET_ACCESS_ENABLED` | `true` | Controls whether toolbox runtime containers receive Docker socket access. |
+| `DOCKER_SOCKET_HOST_PATH` | `/var/run/docker.sock` | Host Docker socket path. |
+| `DOCKER_SOCKET_CONTAINER_PATH_CODEX` | `/var/run/docker.sock` | In-container socket path for Codex runtimes. |
+| `DOCKER_SOCKET_CONTAINER_PATH_CLAUDE` | `/var/run/docker.sock` | In-container socket path for Claude runtimes. |
+
+## Hostexec Variables
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `HOSTEXEC_TOKEN` | empty | Optional bearer token used when **Settings** points Hostexec at this environment variable. |
+| `HOSTEXEC_HOST` | `127.0.0.1` | Host daemon address. |
+| `HOSTEXEC_PORT` | `38128` | Host daemon port. |
+
+## Security Note
+
+Docker socket access is privileged. If enabled, runtime containers can effectively gain host-level control through the Docker daemon.
+
+## Related Articles
+
+- [Run Verft locally](/run-verft-locally)
+- [Configure provider credentials](/configure-provider-credentials)

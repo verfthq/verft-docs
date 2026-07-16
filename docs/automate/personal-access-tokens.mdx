@@ -1,0 +1,36 @@
+---
+slug: /personal-access-tokens
+title: Personal access tokens
+---
+
+# Personal Access Tokens
+
+Use a personal access token when an external client needs to call Verft as your user.
+
+Verft uses personal access tokens for MCP clients and the create-or-queue task API.
+
+## Create a Token
+
+1. Open **Profile**.
+
+2. Find **Personal Access Token**.
+
+3. Select **Generate Token**.
+
+4. Copy the token immediately.
+
+## What to Expect
+
+- The token value is shown only once after generation.
+- If a token already exists in the profile token section, **Regenerate Token** revokes the active token and creates a new one.
+- Token lists show the token prefix, creation time, and last-used time.
+- API requests send the token as a bearer token: `Authorization: Bearer <token>`.
+
+## Required Scopes for Automation
+
+The create-or-queue task API requires repository access and task scopes. See [Token scopes](/token-scopes) for the scope list.
+
+## Related Articles
+
+- [Create or continue tasks from automation](/create-or-queue-task-api)
+- [Token scopes](/token-scopes)

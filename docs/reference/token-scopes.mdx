@@ -1,0 +1,34 @@
+---
+slug: /token-scopes
+title: Token scopes
+---
+
+# Token Scopes
+
+Token scopes control what a personal access token can do.
+
+## Scope Groups
+
+| Group | Scopes |
+| --- | --- |
+| Tasks | `task:list`, `task:create`, `task:create_subtask`, `task:read`, `task:edit`, `task:build`, `task:ask`, `task:terminal`, `task:delete` |
+| Repositories | `repo:list`, `repo:read`, `repo:create`, `repo:edit`, `repo:delete` |
+| Settings | `settings:read`, `settings:edit` |
+| Users | `user:list`, `user:create`, `user:read`, `user:edit`, `user:delete` |
+
+## Create-or-Queue Task API
+
+For `POST /api/tasks/create-or-queue`, the token must include:
+
+| Scope | When it is needed |
+| --- | --- |
+| `repo:read` or `repo:list` | To access the repository. |
+| `task:edit` | To queue a message on a task. |
+| `task:create` | When the API may create a task. |
+| `task:build` | For Build tasks. |
+| `task:ask` | For Ask tasks. |
+
+## Related Articles
+
+- [Personal access tokens](/personal-access-tokens)
+- [Create or continue tasks from automation](/create-or-queue-task-api)

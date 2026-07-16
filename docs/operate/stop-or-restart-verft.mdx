@@ -1,0 +1,38 @@
+---
+slug: /stop-or-restart-verft
+title: Stop or restart Verft
+---
+
+# Stop or Restart Verft
+
+Use the `verft` helper script to stop, start, rebuild, or update a local Verft stack.
+
+## Before You Begin
+
+You need terminal access to the Verft repository checkout.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `./verft start` | Starts the Docker Compose stack in the background. |
+| `./verft stop` | Stops the Docker Compose stack. |
+| `./verft rebuild` | Rebuilds compose and agent toolbox runtime images, then restarts. |
+| `./verft rebuild --clean` | Pulls base images, rebuilds without the build cache, then restarts. |
+| `./verft update` | Fast-forwards the current Git branch, then rebuilds and restarts. |
+| `./verft init` | Initializes by rebuilding and starting the stack. |
+
+## Check Health
+
+After starting Verft, check the health endpoint:
+
+```bash
+curl -fsS http://localhost:3217/api/health
+```
+
+If you changed `PUBLIC_PORT`, replace `3217` with the configured port.
+
+## Related Articles
+
+- [Run Verft locally](/run-verft-locally)
+- [Inspect Verft server logs](/inspect-logs)

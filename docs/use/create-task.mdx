@@ -1,0 +1,65 @@
+---
+slug: /create-task
+title: Create a task
+---
+
+# Create a Task
+
+Create a Verft task when you want an agent to work on a repository or answer a repository question.
+
+## Before You Begin
+
+You need:
+
+- access to **Tasks**
+- task creation permission
+- **Build** or **Ask** task permission
+- a repository added in **Repositories**
+- configured provider credentials for the selected provider
+
+## Steps
+
+1. Open **Tasks**.
+
+2. Select **New Task**.
+
+3. Fill in **Configuration**:
+
+   - **Repository**
+   - **Deadline**, if needed
+   - **Task Type**
+   - **Provider**
+   - **Model**
+   - **Effort**
+   - **Codex Credential Source**, for Codex tasks
+   - **Base Branch**
+   - **Branch Strategy**, for Build tasks
+
+4. Enter a **Title**.
+
+5. Enter the **Prompt** for a Build task, or the **Question** for an Ask task.
+
+6. Optional: use **Magic Wand** to improve the prompt.
+
+7. Optional: attach prompt images if the task supports attachments.
+
+8. Select **Create Task**.
+
+## Result
+
+Verft creates the task and opens the task detail page.
+
+You can also select **Save Draft** if you want to keep the task without starting it yet.
+
+## Troubleshooting
+
+- Problem: The provider is unavailable.
+  - Solution: Check **Settings** for the required provider credentials and your role's allowed providers.
+
+- Problem: You cannot create a Build or Ask task.
+  - Solution: Ask an administrator to grant the matching task permission.
+
+## Related Articles
+
+- [Task types](/task-types)
+- [Review task results](/review-task-results)

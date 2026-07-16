@@ -83,21 +83,6 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      links: [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Getting started',
-              to: '/',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/verfthq/verft',
-            },
-          ],
-        },
-      ],
       copyright: `Copyright © ${new Date().getFullYear()} Verft.`,
     },
     prism: {

@@ -1,0 +1,52 @@
+---
+slug: /api-responses-and-errors
+title: API responses and errors
+---
+
+# API Responses and Errors
+
+Use this reference to interpret responses from `POST /api/tasks/create-or-queue`.
+
+## Successful Response
+
+Verft returns `202 Accepted` when the request is accepted.
+
+```json
+{
+  "taskId": "task_123",
+  "messageId": "msg_123",
+  "createdTask": true,
+  "queuedMessage": true,
+  "deduped": false
+}
+```
+
+## Duplicate Event Response
+
+When the same `dedupeKey` has already been used, Verft returns the existing message and does not queue a duplicate.
+
+```json
+{
+  "taskId": "task_123",
+  "messageId": "msg_123",
+  "createdTask": false,
+  "queuedMessage": false,
+  "deduped": true
+}
+```
+
+## Status Codes
+
+| Status | Meaning |
+| --- | --- |
+| `202` | Request accepted. A task was created or continued, or the message was deduped. |
+| `400` | Request shape is invalid. |
+| `401` | Missing or invalid personal access token. |
+| `403` | The token user is missing a required scope or repository access. |
+| `404` | Repository not found, task not visible, or `createIfMissing=false` and no task exists. |
+| `409` | The task cannot be changed right now, for example because an active terminal session blocks queued changes. |
+
+## Related Articles
+
+- [Create or continue tasks from automation](/create-or-queue-task-api)
+- [API request examples](/api-request-examples)

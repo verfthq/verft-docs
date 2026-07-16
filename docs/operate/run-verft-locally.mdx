@@ -1,0 +1,59 @@
+---
+slug: /run-verft-locally
+title: Run Verft locally
+---
+
+# Run Verft Locally
+
+Run Verft on your machine with the Docker-based helper script.
+
+## Before You Begin
+
+You need:
+
+- Docker
+- Docker Compose
+- Bash
+- access to the Verft repository
+
+## Steps
+
+1. Clone the Verft repository:
+
+   ```bash
+   git clone git@github.com:verfthq/verft.git
+   cd verft
+   ```
+
+2. Create a local environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Initialize the Docker stack and agent runtime image:
+
+   ```bash
+   ./verft init
+   ```
+
+4. Start Verft:
+
+   ```bash
+   ./verft start
+   ```
+
+5. Open Verft in your browser:
+
+   ```text
+   http://localhost:3217/login
+   ```
+
+## Result
+
+Verft starts locally and is reachable at `http://localhost:3217/login` unless you changed `PUBLIC_PORT`.
+
+## Related Articles
+
+- [Environment variables](/environment-variables)
+- [Stop or restart Verft](/stop-or-restart-verft)
