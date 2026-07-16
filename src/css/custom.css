@@ -130,6 +130,8 @@ body {
 .navbar__logo img {
   color: #1a1d21;
   display: block;
+  height: auto;
+  width: 100px;
 }
 
 html[data-theme='dark'] .navbar__logo img,
