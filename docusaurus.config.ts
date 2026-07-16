@@ -1,8 +1,31 @@
+import path from 'node:path';
+import autoprefixer from 'autoprefixer';
+import tailwindcss from 'tailwindcss';
 import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import type {Config, Plugin} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+function tailwindPlugin(): Plugin {
+  return {
+    name: 'docusaurus-tailwindcss',
+    configurePostCss(postcssOptions) {
+      postcssOptions.plugins.push(tailwindcss);
+      postcssOptions.plugins.push(autoprefixer);
+      return postcssOptions;
+    },
+    configureWebpack() {
+      return {
+        resolve: {
+          alias: {
+            '@': path.resolve(__dirname, 'src'),
+          },
+        },
+      };
+    },
+  };
+}
 
 const config: Config = {
   title: 'Verft Docs',
@@ -45,6 +68,7 @@ const config: Config = {
   ],
 
   plugins: [
+    tailwindPlugin,
     [
       '@easyops-cn/docusaurus-search-local',
       {
