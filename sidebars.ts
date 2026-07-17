@@ -41,6 +41,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'operate/run-verft-locally',
         'operate/configure-provider-credentials',
+        'operate/run-host-commands',
         'operate/inspect-server-logs',
         'operate/stop-or-restart-verft',
       ],

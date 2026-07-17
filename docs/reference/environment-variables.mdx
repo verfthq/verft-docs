@@ -26,6 +26,9 @@ Provider API keys and GitHub credentials are configured in **Settings**, not in 
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `AGENT_RUNTIME_IMAGE` | `verft-agent-toolbox:latest` | Agent toolbox image used by automated runs and runtime containers. |
+| `TASK_WORKSPACE_ROOT` | `/task-workspaces` | Task workspace path inside the Verft server container. |
+| `TASK_WORKSPACE_DOCKER_SOURCE` | auto-detected | Docker daemon path used when Verft mounts task workspaces into runtime containers. Docker Desktop may report this as a `/host_mnt/...` path. |
+| `TASK_WORKSPACE_HOST_SOURCE` | derived from `TASK_WORKSPACE_DOCKER_SOURCE` | Real host OS path used as the Hostexec command working directory. On macOS, use the `/Users/...` path, not the `/host_mnt/Users/...` Docker path. |
 | `DOCKER_SOCKET_ACCESS_ENABLED` | `true` | Controls whether toolbox runtime containers receive Docker socket access. |
 | `DOCKER_SOCKET_HOST_PATH` | `/var/run/docker.sock` | Host Docker socket path. |
 | `DOCKER_SOCKET_CONTAINER_PATH_CODEX` | `/var/run/docker.sock` | In-container socket path for Codex runtimes. |
@@ -38,6 +41,7 @@ Provider API keys and GitHub credentials are configured in **Settings**, not in 
 | `HOSTEXEC_TOKEN` | empty | Optional bearer token used when **Settings** points Hostexec at this environment variable. |
 | `HOSTEXEC_HOST` | `127.0.0.1` | Host daemon address. |
 | `HOSTEXEC_PORT` | `38128` | Host daemon port. |
+| `HOSTEXEC_COMMANDS` | empty | Optional command allowlist for the host daemon. Leave empty to let the daemon allow all valid command names; repository **Host Commands** still control which command shims are mounted for each repository. |
 
 ## Security Note
 
@@ -46,4 +50,5 @@ Docker socket access is privileged. If enabled, runtime containers can effective
 ## Related Articles
 
 - [Run Verft locally](/run-verft-locally)
+- [Run host commands from tasks](/run-host-commands)
 - [Configure provider credentials](/configure-provider-credentials)

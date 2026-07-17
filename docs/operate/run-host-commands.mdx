@@ -1,0 +1,111 @@
+---
+slug: /run-host-commands
+title: Run host commands from tasks
+---
+
+# Run Host Commands From Tasks
+
+Use Hostexec when Verft tasks need to run a command that exists on the host machine, such as `xcodebuild`.
+
+Hostexec runs the command on the host while the task runs in a Verft runtime container. Use it only for commands you trust tasks to run.
+
+## Before You Begin
+
+You need:
+
+- access to the machine that runs Verft
+- access to the Verft repository checkout on that machine
+- permission to edit Verft's `.env` file and restart Verft
+- permission to edit **Settings**
+- permission to edit the repository in **Repositories**
+- the host command installed on the host machine
+
+## Steps
+
+1. Open the Verft repository checkout on the host machine.
+
+2. Optional: add Hostexec settings to `.env`.
+
+   Use `HOSTEXEC_TOKEN` if you want Verft to call the daemon with a bearer token. Use `HOSTEXEC_COMMANDS` to restrict which commands the daemon allows.
+
+   ```bash
+   HOSTEXEC_TOKEN=change-this-token
+   HOSTEXEC_COMMANDS=xcodebuild
+   ```
+
+3. If Verft runs in Docker Desktop on macOS and task workspaces use a `/host_mnt/...` Docker path, set the matching host path.
+
+   `TASK_WORKSPACE_DOCKER_SOURCE` is the path Docker uses. `TASK_WORKSPACE_HOST_SOURCE` is the real macOS path Hostexec uses as the command working directory.
+
+   ```bash
+   TASK_WORKSPACE_DOCKER_SOURCE=/host_mnt/Users/alex/verft/task-workspaces
+   TASK_WORKSPACE_HOST_SOURCE=/Users/alex/verft/task-workspaces
+   ```
+
+4. Start the Hostexec daemon from the Verft repository checkout:
+
+   ```bash
+   npm run hostexec
+   ```
+
+5. If Verft runs in Docker on Linux and cannot reach the daemon, bind the daemon to all interfaces:
+
+   ```bash
+   npm run hostexec -- --host 0.0.0.0
+   ```
+
+   Only use this on a trusted network or behind network controls.
+
+6. In Verft, open **Settings**.
+
+7. Open **Hostexec**.
+
+8. Turn on **Enabled**.
+
+9. Select **Check availability**.
+
+   If Verft detects the daemon, it fills in the detected **URL**.
+
+10. If you set `HOSTEXEC_TOKEN`, enter `HOSTEXEC_TOKEN` in **Bearer Token Env Var**.
+
+    Enter the environment variable name, not the token value.
+
+11. Select **Save Hostexec Settings**.
+
+12. Open **Repositories** and edit the repository that needs host commands.
+
+13. Open **Host Commands**.
+
+14. Under **Mounted Commands**, select **Add command**.
+
+15. Enter the command name, such as `xcodebuild`.
+
+    Use the simple command name only. Do not enter a path or arguments.
+
+16. Save the repository.
+
+## Result
+
+New task runs for that repository can call the mounted command by name. Verft sends the command to the Hostexec daemon, and the daemon runs it on the host from the task workspace.
+
+## Troubleshooting
+
+- Problem: **Check availability** does not detect the daemon.
+  - Solution: Confirm `npm run hostexec` is running. If Verft runs in Docker, enter `http://host.docker.internal:38128` in **URL**, or use the Linux binding step above.
+
+- Problem: Verft says the Hostexec token environment variable is not set.
+  - Solution: Set the token environment variable in the Verft server environment, then restart Verft. If the daemon also uses `HOSTEXEC_TOKEN`, make sure the values match.
+
+- Problem: The command is not available in a task.
+  - Solution: Confirm the repository includes the command under **Host Commands**. If `HOSTEXEC_COMMANDS` is set, confirm it includes the same command name.
+
+- Problem: A host command fails with `cwd does not exist`.
+  - Solution: On macOS, set `TASK_WORKSPACE_HOST_SOURCE` to the real host path, such as `/Users/alex/verft/task-workspaces`, not the Docker Desktop path under `/host_mnt`.
+
+- Problem: The daemon cannot find the host command.
+  - Solution: Start the daemon from a shell where the command is on `PATH`. The daemon logs JSON events with path diagnostics and command rejection reasons.
+
+## Related Articles
+
+- [Environment variables](/environment-variables)
+- [Add your first repository](/add-first-repository)
