@@ -1,0 +1,89 @@
+---
+sidebar_position: 2
+slug: /create-tasks-from-github-comments
+title: Create tasks from GitHub comments
+---
+
+# Create Tasks from GitHub Comments
+
+Connect a repository to GitHub so Verft can create tasks from GitHub issue and pull request feedback.
+
+This guide is for repository admins who want GitHub comments, pull request review comments, pull request reviews, or pull request review requests to create or continue Verft tasks.
+
+For new repositories, **Only Process Bot Mentions** is on by default. Existing repositories keep their saved setting. When this setting is on and **GitHub Bot User** is set, Verft ignores issue and pull request comments unless the comment mentions that bot user.
+
+## Before You Begin
+
+You need:
+
+- permission to edit the repository in Verft
+- access to the GitHub repository settings
+- a GitHub bot user for Verft, if you want comments to require a bot mention
+- a Verft user to own tasks created from GitHub
+- GitHub credentials configured in **Settings** so Verft can read pull request details and reply on GitHub
+
+## Steps
+
+1. In Verft, open **Repositories**.
+
+2. Open the repository you want to connect.
+
+3. Open **Github**.
+
+4. In **GitHub Bot User**, enter the GitHub login Verft should treat as its bot user.
+
+   Do not include `@`. For example, enter `verft-bot`.
+
+5. Keep **Only Process Bot Mentions** on if users should mention the bot before Verft processes their comments.
+
+   To let Verft process comments without a bot mention, turn **Only Process Bot Mentions** off.
+
+6. Optional: in **Allowed GitHub Users**, enter the GitHub users whose feedback Verft should process.
+
+   Leave this field empty to allow feedback from any non-bot GitHub user.
+
+7. In **GitHub-Created Task Owner**, select the Verft user who should own new tasks created from GitHub.
+
+8. Save the repository.
+
+9. Reopen the repository, then open **Github** again.
+
+10. Copy the **Payload URL**.
+
+11. In GitHub, create a repository webhook with:
+
+    - **Payload URL**: the URL from Verft
+    - **Content type**: `application/json`
+    - **Secret**: the **Github Webhook Secret** from Verft
+    - **Events**: pull requests, issue comments, pull request review comments, and pull request reviews
+
+    If Verft already has a stored webhook secret and you do not know it, enter a new **Github Webhook Secret** in Verft, save the repository, and use that same secret in GitHub.
+
+12. Save the GitHub webhook.
+
+## Result
+
+When GitHub sends a matching event to Verft, Verft creates a Build task or queues the feedback on an existing linked task.
+
+If **Only Process Bot Mentions** is on, users must mention the configured bot in issue and pull request comments, such as `@verft-bot please fix this`. Pull request review requests still work when the configured bot user is requested as the reviewer.
+
+Verft ignores comments from the configured **GitHub Bot User** to prevent reply loops.
+
+## Troubleshooting
+
+- Problem: A GitHub comment does not create or update a task.
+  - Solution: Confirm the comment mentions the configured bot user, or turn **Only Process Bot Mentions** off.
+
+- Problem: Only some GitHub users can create feedback.
+  - Solution: Check **Allowed GitHub Users**. If the field is not empty, only listed users are processed.
+
+- Problem: A GitHub event is received, but no new task is created.
+  - Solution: Select a **GitHub-Created Task Owner**. Verft needs an owner before it can create a new task from unlinked GitHub feedback.
+
+- Problem: A pull request review request does not create a review task.
+  - Solution: In GitHub, request a review from the same user set in **GitHub Bot User**.
+
+## Related Articles
+
+- [Add your first repository](/add-first-repository)
+- [Create or continue tasks from automation](/create-or-queue-task-api)

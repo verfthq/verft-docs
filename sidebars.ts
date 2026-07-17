@@ -29,6 +29,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'automate/create-or-queue-task-api',
+        'automate/create-tasks-from-github-comments',
         'automate/create-documentation-after-pr-merge',
         'automate/personal-access-tokens',
         'automate/api-request-examples',
