@@ -1,0 +1,71 @@
+---
+slug: /troubleshoot-inbound-webhook-deliveries
+title: Troubleshoot inbound webhook deliveries
+---
+
+# Troubleshoot Inbound Webhook Deliveries
+
+Use the repository **Integrations** inbox when an inbound webhook reaches Verft but does not create or update the task you expected.
+
+The inbox shows recent deliveries for the repository, including the event, source, status, payload, matched rule, and a short reason when Verft rejects or drops a delivery.
+
+## Problem
+
+An external system sends a webhook to Verft, but the expected task is not created or updated.
+
+## Possible Causes
+
+The inbox can show these statuses:
+
+| Status | What it means |
+| --- | --- |
+| **Accepted** | Verft accepted the delivery and matched it to task work. |
+| **Rejected** | Verft refused the delivery before processing it. |
+| **Dropped** | Verft received the delivery but could not act on it. |
+
+When a delivery is **Rejected** or **Dropped**, the **Status** column can also show a reason.
+
+| Reason | What to check |
+| --- | --- |
+| **Invalid Signature** | The webhook signature, secret, timestamp, or configured signature header does not match what Verft expects. |
+| **No Matching Rule** | No enabled integration rule matched the delivery headers or body. |
+| **No Task Owner** | Verft could not find a user to own the task. |
+| **Task Start Failed** | Verft matched the delivery and tried to start a task, but task startup failed. |
+
+## Fixes
+
+1. Open **Repositories**.
+
+2. Select the repository that receives the webhook.
+
+3. Open **Integrations**.
+
+4. In **Inbox**, find the delivery.
+
+   Select **Refresh** if the delivery is not visible yet.
+
+5. Check **Status** and the reason tag.
+
+6. If the status is **Rejected** with **Invalid Signature**, check the webhook secret and signature header names in the repository integration settings.
+
+   Verft checks the configured signature headers. By default, Verft uses `x-webhook-signature` and `x-hub-signature-256`.
+
+7. If the status is **Dropped** with **No Matching Rule**, open the delivery **Body** and **Headers**.
+
+   Compare the payload with your integration rules. Update or create a rule that matches a stable header or body field from the delivery.
+
+8. If the status is **Dropped** with **No Task Owner**, set a task owner on the matching integration rule or make sure an active admin user is available.
+
+9. If the status is **Dropped** with **Task Start Failed**, check the task settings used by the rule, including provider, model, effort, branch behavior, and repository access.
+
+## If It Still Does Not Work
+
+- Send the webhook again, then select **Refresh** in the inbox.
+- Open the delivery **Body** and **Headers** to confirm Verft received the payload you expected.
+- Check the matched rule shown in the **Match** column.
+- If no new delivery appears, confirm the external system is sending to the repository's inbound webhook URL.
+
+## Related Articles
+
+- [Add your first repository](/add-first-repository)
+- [Create or continue tasks from automation](/create-or-queue-task-api)
