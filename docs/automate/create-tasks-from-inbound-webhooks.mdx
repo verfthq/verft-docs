@@ -1,0 +1,128 @@
+---
+sidebar_position: 5
+slug: /create-tasks-from-inbound-webhooks
+title: Create tasks from inbound webhooks
+---
+
+# Create Tasks From Inbound Webhooks
+
+Use inbound webhooks when an external tool should create Verft tasks from JSON events.
+
+Each repository has its own webhook endpoint. Integration rules decide which incoming deliveries create tasks, what the task says, and whether later deliveries continue the same task.
+
+## Before You Begin
+
+You need:
+
+- an existing repository in Verft
+- permission to edit that repository
+- an external tool that can send `POST` requests with a JSON body
+- a webhook event example from the external tool
+
+If you want signed deliveries, the external tool must support HMAC-SHA256 signatures.
+
+## Steps
+
+1. Open **Repositories**.
+
+2. Select the repository that should receive webhook events.
+
+3. Open **Integrations**.
+
+4. In **Inbound Endpoint**, copy the **Endpoint** URL.
+
+5. In your external tool, create a webhook that sends `POST` requests with `application/json` content to the copied endpoint.
+
+6. Optional: in Verft, enter a **Webhook Signature Secret**.
+
+   Use the same secret in the external tool. When this secret is set, Verft accepts only requests signed with `X-Webhook-Signature` or `X-Hub-Signature-256`.
+
+7. Save the repository.
+
+8. Send a test webhook from the external tool.
+
+9. In Verft, open **Integrations** and check **Inbox**.
+
+   The delivery should appear as **Unmatched** until you add a rule.
+
+10. In **Rules**, select **Add Rule**.
+
+11. Enter a **Rule Name** and keep **Enabled** on.
+
+12. Under **Filter Conditions**, add at least one condition that matches the event.
+
+    Use **Body** for fields in the JSON body, such as `issue.key`. Use **Header** for request headers, such as `x-github-event`.
+
+13. Under **Mapping**, set the **Task Title Template** and **Task Instructions Template**.
+
+    Use placeholders such as `{{body.issue.title}}` or `{{header.X-GitHub-Event}}` to include values from the webhook.
+
+14. Choose **Branch Behavior**.
+
+    Use a new feature branch for each new webhook task, or work on an existing branch from the payload.
+
+15. Optional: under **Execution**, choose a **Provider**, **Model**, or **Effort** for tasks created by this rule.
+
+16. Optional: turn on **Queue follow-up deliveries on the same task**.
+
+    Set **Correlation Field** to a stable value, such as `body.issue.key`, so later deliveries for the same external item queue messages on the existing task instead of creating another task.
+
+17. Optional: choose a **Task Owner**.
+
+18. Select **Save**.
+
+19. Send the webhook again.
+
+## Result
+
+When a delivery matches an enabled rule, Verft creates a Build task and starts it.
+
+If the rule has task deduplication enabled and Verft finds an existing webhook-created task with the same correlation value, Verft queues the delivery as a follow-up message on that task.
+
+Matched and unmatched deliveries appear in **Inbox**. The inbox shows the latest 30 deliveries for the repository.
+
+## Create a Rule From an Inbox Delivery
+
+Use this when you are not sure which fields the external tool sends.
+
+1. Open **Repositories** and select the repository.
+
+2. Open **Integrations**.
+
+3. In **Inbox**, select **Body** or **Headers** for a delivery.
+
+4. Review the JSON.
+
+5. Select **Create Rule from This**.
+
+6. Add filter conditions and mappings from the payload values.
+
+7. Select **Save**.
+
+## Reuse Rules
+
+Use **Export YAML** to download the current rules.
+
+Use **Import YAML** to add rules from a YAML file or pasted YAML. Select **Replace existing rules before import** only when the imported rules should replace all current rules.
+
+Use **Copy From Repo** to copy integration rules from another repository. You can also copy the inbound webhook signature secret, but both repositories will then accept the same signed webhook secret.
+
+## Troubleshooting
+
+- Problem: The delivery appears in **Inbox** as **Unmatched**.
+  - Solution: Check that at least one enabled rule has filter conditions that match the delivery body or headers. All conditions in a rule must match.
+
+- Problem: The webhook returns `401`.
+  - Solution: If **Webhook Signature Secret** is set, check that the external tool signs the raw JSON body with the same secret and sends `X-Webhook-Signature` or `X-Hub-Signature-256`.
+
+- Problem: A matching delivery does not create a new task.
+  - Solution: Check whether **Queue follow-up deliveries on the same task** is enabled and the delivery has the same **Correlation Field** value as an existing webhook-created task.
+
+- Problem: The task title or instructions are missing values.
+  - Solution: Check that each placeholder points to an existing body field or header. Missing values are inserted as blank text.
+
+## Related Articles
+
+- [Inbound webhook integration rules](/inbound-webhook-integration-rules)
+- [Add your first repository](/add-first-repository)
+- [Create or continue tasks from automation](/create-or-queue-task-api)

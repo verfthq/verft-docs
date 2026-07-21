@@ -1,0 +1,148 @@
+---
+slug: /inbound-webhook-integration-rules
+title: Inbound webhook integration rules
+---
+
+# Inbound Webhook Integration Rules
+
+Inbound webhook integration rules control how a repository handles JSON webhook deliveries.
+
+Use this reference to check rule options, matching behavior, template syntax, signature requirements, and YAML import limits.
+
+## Availability
+
+Integration rules are available after a repository has been created.
+
+Open **Repositories**, select a repository, then open **Integrations**.
+
+## Endpoint
+
+Each repository has one **Inbound Endpoint**.
+
+Webhook senders must send:
+
+- method: `POST`
+- content type: `application/json`
+- body: JSON
+
+If **Webhook Signature Secret** is set, each request must include a valid HMAC-SHA256 signature in one of these headers:
+
+- `X-Webhook-Signature`
+- `X-Hub-Signature-256`
+
+The signature value must use the `sha256=` prefix.
+
+## Rule Matching
+
+Only enabled rules can match deliveries.
+
+Each rule must have at least one **Filter Condition**. A rule matches only when all its conditions match.
+
+| Option | Supported values |
+| --- | --- |
+| Source | **Header**, **Body** |
+| Operator | **Equals**, **Contains**, **Exists**, **Regex** |
+
+Use dot paths for JSON body fields, such as `issue.key` or `pull_request.head.ref`.
+
+Header names are matched without case sensitivity.
+
+If more than one rule matches, Verft uses the first matching enabled rule.
+
+## Mapping
+
+Mapping fields define the task Verft creates or the follow-up message it queues.
+
+| Field | What it controls |
+| --- | --- |
+| **Task Title Template** | The task title. If blank, Verft uses `Webhook task`. |
+| **Task Instructions Template** | The task instructions. If blank, Verft uses the task title. |
+| **Branch Behavior** | Whether a new task creates a feature branch or works on an existing branch. |
+| **Existing Branch Template** | The branch to use when **Branch Behavior** works on an existing branch. |
+
+Templates can include webhook values:
+
+```text
+{{body.issue.title}}
+{{body.pull_request.head.ref}}
+{{header.X-GitHub-Event}}
+```
+
+Missing values are inserted as blank text.
+
+## Execution
+
+Use **Execution** to override repository defaults for tasks created by one rule.
+
+| Field | Purpose |
+| --- | --- |
+| **Provider** | Runs matching tasks with a specific provider. |
+| **Model** | Runs matching tasks with a specific model for the selected provider. |
+| **Effort** | Runs matching tasks with a specific effort level. |
+
+Leave these fields blank to use the repository defaults.
+
+## Task Deduplication
+
+Turn on **Queue follow-up deliveries on the same task** when multiple webhook deliveries belong to the same external item.
+
+Set **Correlation Field** to a stable field from the body or headers, such as:
+
+```text
+body.issue.key
+body.pull_request.id
+header.X-External-ID
+```
+
+When a later delivery has the same correlation value, Verft queues it on the existing webhook-created task instead of creating a new task.
+
+## Inbox
+
+**Inbox** shows recent webhook deliveries for the repository.
+
+The inbox shows:
+
+- when the delivery was received
+- detected event labels when available
+- source IP
+- payload preview
+- match status
+- body and headers JSON
+
+The repository keeps the latest 30 deliveries.
+
+## YAML Import
+
+Use **Export YAML** to download the current rules.
+
+Use **Import YAML** to create rules from YAML. Imported YAML must use `version: 1` and a `rules` list.
+
+Secrets are not imported from YAML. Imported rules use the repository's existing inbound webhook secret.
+
+YAML import supports up to 100 rules at once. Each rule can contain up to 20 filter conditions.
+
+Example:
+
+```yaml
+version: 1
+rules:
+  - name: "GitHub bot mention"
+    enabled: true
+    filter:
+      conditions:
+        - source: body
+          field: "comment.body"
+          op: regex
+          value: "(^|[^A-Za-z0-9_])@verftbot(?=$|[^A-Za-z0-9_])"
+    mapping:
+      title: "Review comment on {{body.repository.full_name}}"
+      instructions: "{{body.comment.body}}"
+    execution: null
+    correlationField: "body.issue.id"
+    taskOwnerUserId: null
+```
+
+## Related Articles
+
+- [Create tasks from inbound webhooks](/create-tasks-from-inbound-webhooks)
+- [Create or continue tasks from automation](/create-or-queue-task-api)

@@ -30,6 +30,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'automate/create-or-queue-task-api',
         'automate/create-documentation-after-pr-merge',
+        'automate/create-tasks-from-inbound-webhooks',
         'automate/personal-access-tokens',
         'automate/api-request-examples',
       ],
@@ -52,6 +53,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'reference/task-types',
         'reference/token-scopes',
+        'reference/inbound-webhook-integration-rules',
         'reference/api-responses-and-errors',
         'reference/environment-variables',
       ],
