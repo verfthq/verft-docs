@@ -1,0 +1,139 @@
+---
+sidebar_position: 5
+slug: /create-tasks-from-inbound-webhooks
+title: Create tasks from inbound webhooks
+---
+
+# Create Tasks from Inbound Webhooks
+
+Use repository **Integrations** when an external tool should send JSON webhook deliveries to Verft.
+
+Verft records each delivery in the repository **Inbox**. When an enabled rule matches the delivery, Verft creates a Build task or queues a follow-up message on an existing webhook-created task.
+
+## Before You Begin
+
+You need:
+
+- a repository already added in Verft
+- permission to edit the repository
+- a public Verft URL that the webhook source can reach
+- an external tool that can send `POST` requests with `application/json`
+- a shared secret if you want Verft to require signed deliveries
+
+If you set a **Webhook Signature Secret**, every delivery to the inbound endpoint must include an HMAC-SHA256 signature in `sha256=<hex_digest>` format.
+
+Verft accepts either signature header:
+
+- `X-Webhook-Signature`
+- `X-Hub-Signature-256`
+
+## Steps
+
+1. Open **Repositories**.
+
+2. Open the repository you want to automate.
+
+3. Open **Integrations**.
+
+4. In **Inbound Endpoint**, copy the **Endpoint** URL.
+
+   The endpoint uses this format:
+
+   ```text
+   https://verft.example.com/integrations/webhooks/<repository_id>
+   ```
+
+5. Optional: enter a **Webhook Signature Secret**.
+
+   Use the same secret in the external webhook source. For GitHub webhooks, enter the secret in GitHub and set the content type to `application/json`.
+
+6. Save the repository.
+
+7. In the external tool, create a webhook that sends `POST` requests to the endpoint URL.
+
+8. In Verft, under **Rules**, select **Add Rule**.
+
+9. Enter a **Rule Name** and keep **Enabled** turned on.
+
+10. Add **Filter Conditions**.
+
+    All conditions must match. Choose whether each condition checks a request **header** or the JSON **body**, then choose an operator:
+
+    - `equals`
+    - `contains`
+    - `exists`
+    - `regex`
+
+    Use dot paths for nested JSON body fields, such as `issue.key` or `pull_request.head.ref`.
+
+11. Fill in **Mapping**.
+
+    Use **Task Title Template** and **Task Instructions Template** to control the task Verft creates. Templates can include placeholders such as:
+
+    ```text
+    {{body.issue.summary}}
+    {{header.X-GitHub-Event}}
+    ```
+
+12. Choose **Branch Behavior**.
+
+    Use the default behavior when Verft should create a new feature branch for each new task. Choose the existing-branch option only when the webhook payload contains the branch Verft should work on.
+
+13. Optional: set **Provider**, **Model**, and **Effort** in **Execution**.
+
+    Leave these empty to use the repository defaults.
+
+14. Optional: turn on **Queue follow-up deliveries on the same task**.
+
+    Enter a **Correlation Field** that uniquely identifies the external item, such as `body.issue.key` or `body.pull_request.id`. Verft uses this value to find the existing webhook-created task and queue new deliveries as messages.
+
+15. Optional: choose a **Task Owner**.
+
+    If you leave this empty, Verft uses an active administrator when possible.
+
+16. Select **Save**.
+
+17. Send a test delivery from the external tool.
+
+18. In **Inbox**, select **Refresh**.
+
+    Use **Body** and **Headers** to inspect the received payload. If the delivery is **Unmatched**, adjust the rule conditions and test again.
+
+## Result
+
+Verft returns `202 Accepted` when it accepts a delivery.
+
+If no rule matches, Verft stores the delivery in **Inbox** but does not create a task.
+
+If a rule matches and the correlation field matches an existing webhook-created task, Verft queues the delivery as a follow-up message on that task. Otherwise, Verft creates and starts a new Build task.
+
+## Manage Rules
+
+- Use the rule switch to pause or enable a rule.
+- Use **Copy From Repo** to copy integration rules from another repository. You can also copy the inbound webhook signature secret.
+- Use **Export YAML** to download the current rules.
+- Use **Import YAML** to create rules from YAML. Imported YAML does not include secrets and uses the repository's existing inbound webhook secret.
+- The **Inbox** shows the latest 30 deliveries.
+
+## Troubleshooting
+
+- Problem: The webhook returns `401`.
+  - Solution: Check the **Webhook Signature Secret**. Signed deliveries must use HMAC-SHA256 over the raw request body and include `sha256=` before the hex digest. If both signature headers are present, make sure `X-Webhook-Signature` is valid.
+
+- Problem: The delivery appears as **Unmatched**.
+  - Solution: Open **Body** and **Headers** in **Inbox** and compare them with the rule conditions. Remember that all conditions must match.
+
+- Problem: Verft creates duplicate tasks for the same external item.
+  - Solution: Turn on **Queue follow-up deliveries on the same task** and use a stable **Correlation Field**.
+
+- Problem: A rule matches, but no task is created.
+  - Solution: Choose a **Task Owner** for the rule and send another test delivery.
+
+- Problem: Imported rules work, but signed deliveries fail.
+  - Solution: Set the repository **Webhook Signature Secret** separately, or use **Copy From Repo** and select **Copy inbound webhook signature secret**.
+
+## Related Articles
+
+- [Add your first repository](/add-first-repository)
+- [Create or continue tasks from automation](/create-or-queue-task-api)
+- [Create a task](/create-task)

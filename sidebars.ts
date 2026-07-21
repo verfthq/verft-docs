@@ -30,6 +30,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'automate/create-or-queue-task-api',
         'automate/create-documentation-after-pr-merge',
+        'automate/create-tasks-from-inbound-webhooks',
         'automate/personal-access-tokens',
         'automate/api-request-examples',
       ],
