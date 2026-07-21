@@ -1,13 +1,13 @@
 ---
 slug: /inspect-task-logs
-title: Inspect task logs
+title: Inspect a task timeline
 ---
 
-# Inspect Task Logs
+# Inspect a Task Timeline
 
-Use task logs when you need to understand what happened during a Verft task run.
+Use the task timeline when you need to understand what happened during a Verft task run.
 
-This page covers logs inside a task. For Docker container logs on the Verft server, see [Inspect Verft server logs](/inspect-logs).
+This page covers the timeline inside a task. For Docker container logs on the Verft server, see [Inspect Verft server logs](/inspect-logs).
 
 ## Before You Begin
 
@@ -21,13 +21,20 @@ You need access to the task.
 
 3. Review the task messages and status first.
 
-4. Open the task logs or run output shown on the task detail page.
+4. In the task history, open **Timeline** for the run you want to inspect.
 
 5. Check the most recent entries for failures, queued work, provider output, or terminal activity.
 
+6. If **Raw JSON** is available, select it to download the raw provider JSONL for that run.
+
 ## Result
 
-You can see task-level execution output from the browser and use it to understand task progress or failures.
+You can see task-level execution events from the browser and use them to understand task progress or failures.
+
+## Troubleshooting
+
+- Problem: **Raw JSON** is not shown.
+  - Solution: Use the timeline entries and task messages. Raw provider JSON is only available for some runs.
 
 ## Related Articles
 
